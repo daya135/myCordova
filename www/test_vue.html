@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<script src="js/vue.js"></script>
+		<title>test vue</title>
+	</head>
+	<body>
+		<div id="app">
+			<h2>site: {{site}}</h2>
+			<h2>message: {{message}}</h2>
+			<h2>details: {{details()}}</h2>
+		</div>
+		<button onclick="changeData()">动态改变数据</button></br>
+	</body>
+	<script>
+		var data = {
+				site: "test_vue.com",
+				message: '你好世界',
+				alexa: "10000"
+		};
+		var vm = new Vue({
+			el: '#app',
+			data: data,
+			methods: {
+				details: function() {
+					return this.site + " - 前端框架怎么这么多！！";
+				}
+			}
+		})
+		function changeData(){
+			data.message = "改变了message值";
+		}
+		document.write("<p>测试vue的特有属性，使用“$”前缀 </p>");
+		document.write(vm.$data === data) // true
+		document.write("<br>") // true
+		document.write(vm.$el === document.getElementById('app')) // true
+	</script>
+</html>
