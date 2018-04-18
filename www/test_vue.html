@@ -4,36 +4,145 @@
 		<meta charset="UTF-8">
 		<script src="js/vue.js"></script>
 		<title>test vue</title>
+		<style>
+			.class1{
+			  background: #444;
+			  color: #eee;
+			}
+		</style>
 	</head>
 	<body>
 		<div id="app">
-			<h2>site: {{site}}</h2>
-			<h2>message: {{message}}</h2>
-			<h2>details: {{details()}}</h2>
+			<h3>文本	, v-html:</h3>
+			<div v-html="test_site"><h4>site:</h4></div> <!--v-html 指令用于输出 html代码, 原有值被覆盖-->
+			<h4>message: {{message}}</h4><!--直接插入文本-->
+			<h4>details: {{details()}}</h4>
+			<input v-model="message" />
+			<button onclick="changeData()">动态改变数据</button></br>
+			<hr />
+			<h3>属性， v-bind 指令：</h3>
+			<label for="r1">修改颜色</label><input type="checkbox" v-model="class1" id="r1">
+		    <br><br>
+		    <div v-bind:class="{'class1': class1}">
+		    	directiva v-bind:class
+		    </div>
+			<hr />
+			<h3>表达式：</h3>
+			<p>{{5+5}}</p>
+			<p>OK: {{ok ? 'YES' : 'NO' }}</p>
+			<p>直接通过表达式反转字符串：{{message.split('').reverse().join('')}}</p>
+			<p>通过方法反转字符串：{{ reversedMessage1() }}</p>
+			<p>通过计算反转字符串: {{ reversedMessage2 }}</p>
+			<p>computed是基于它的依赖缓存，只有相关依赖发生改变时才会重新取值，性能较好。methods 在重新渲染的时候，函数总会重新调用执行。</p>
+    		<p v-bind:id="'div-' + id">这个p元素的id={{'div-' + id}}</p>
+			<hr />
+			<h3>指令：</h3>
+			<pre><a v-bind:href="url" v-bind:target="target">test_vue</a></pre>
+			<button v-on:click="reversedMessage">通过v-on:click指定method反转message</button>
+			
+			<hr />
+			<h3>过滤器被指令调用和表达式调用的两种写法；测试过滤器参数；测试v-bind、v-on的简写：</h3>
+			<label>将message转大写： </label><span :id="message | captialize">{{ message | captialize("this is arg") }}</span><br>
+			<button @click="reversedMessage">通过@click指定method反转message</button>
+			<hr />
+			<h3>条件指令：</h3>
+			<p v-show="ok">v-if与v-show的区别：一个是条件渲染，一个是初始渲染并基于CSS控制</p>
+			<template v-if="ok">
+		      <p>template现形了</p>
+		      <p v-if="type === 'p'">v-if="type === 'p'</p>
+		      <h3 v-else-if="type === 'h3'">v-else-if="type === 'h3'</h3>
+		      <div v-if="Num > 0.5">
+      			随机数为 {{ Num}} 大于0.5
+    		  </div>
+    		  <div v-else>
+     			随机数为 {{ Num}} 小于或等于 0.5
+    		  </div>
+		    </template>
+			<hr />
+			<h3>循环指令，可以迭代数组、对象、整数：</h3>
+			<ol>
+				<li v-for="site in sites">{{site.name}}</li>
+			</ol>
+			<hr />
 		</div>
-		<button onclick="changeData()">动态改变数据</button></br>
+		<hr />
+		<div>
+			{{5+5}}<br />
+			{{ok ? 'YES' : 'NO' }}<br/>
+		</div>
+		<hr />
+		
 	</body>
 	<script>
 		var data = {
-				site: "test_vue.com",
-				message: '你好世界',
-				alexa: "10000"
+				sites: [
+			      { name: 'Runoob' },
+			      { name: 'Google' },
+			      { name: 'Taobao' }
+			    ],
+				test_site: '<h4>test_vue.com<h4>',
+				message: 'hello world',
+				alexa: "10000",
+				class1: false,
+				id: 1,
+				ok: true,
+				type: 'p',
+				Num:Math.random(),
+				url: 'http://127.0.0.1:8020/myCordova/www/test_vue.html',
+				target: '_blank'
 		};
 		var vm = new Vue({
 			el: '#app',
 			data: data,
 			methods: {
 				details: function() {
-					return this.site + " - 前端框架怎么这么多！！";
+					return this.test_site + " - 前端框架怎么这么多！！";
+				},	
+				reversedMessage: function () {
+      				this.message = this.message.split('').reverse().join('')
+    			},
+				reversedMessage1: function () {
+      				return this.message.split('').reverse().join('')
+    			}
+			},
+			computed: {
+			    // 计算属性的 getter
+			    reversedMessage2: function () {
+			      // `this` 指向 vm 实例
+			    	return this.message.split('').reverse().join('')
+			    },
+			    testcomputed: {
+			    	get: function () {
+				        console.log("get被调用, this.message=", this.message);
+				    },
+				    set: function (arg) {
+				        console.log("set被调用, arg=" + arg);
+				    }
+			    }
+ 			},
+			filters: {
+				captialize: function(value, arg) {
+					console.log("revice arg：" + arg);
+					if (!value) return '';
+					value = value.toString();
+					//首字母转大写
+					return value.charAt(0).toUpperCase() + value.slice(1);
 				}
 			}
 		})
 		function changeData(){
-			data.message = "改变了message值";
+			data.message = "change message value";	
 		}
-		document.write("<p>测试vue的特有属性，使用“$”前缀 </p>");
+		document.write("<h3>测试vue的特有属性，使用“$”前缀 </h3>");
 		document.write(vm.$data === data) // true
 		document.write("<br>") // true
 		document.write(vm.$el === document.getElementById('app')) // true
+		document.write("<hr />");
+		
+		vm.testcomputed = "改变computed的值";
+		
+		function a_onclick() {
+			alert('点击事件');
+		}
 	</script>
 </html>
