@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<script src="js/vue.js"></script>
+		<title>testVue Event</title>
+	</head>
+	<body>
+		<div id="app">
+			<h2>APP1</h2>
+			<button v-html="'按钮被点击了' + counter + '次'" v-on:click="counter += 1"></button>
+			<br>
+			<button v-on:click="greet">button</button><span id="msg"></span><br>
+			<hr>
+			<p>事件修饰符</p>
+			<!-- Alt + C -->
+			<input @keyup.alt.67="clear">
+			<!-- Ctrl + Click -->
+			<div @click.ctrl="doSomething">Do something</div>
+			<hr />	
+			<p>组件</p>
+			<global-component></global-component>
+			<local-component></local-component>
+			<!-- prop 是单向绑定的：当父组件的属性变化时，将传导给子组件，但是不会反过来。-->
+			<h3>测试父组件向子组件传递数据</h3>
+			<prop-component message="hello"></prop-component>
+			<div>
+		      <input v-model="parentMsg">
+		      <br>
+		      <prop-component v-bind:message="parentMsg"></prop-component>
+		    </div>
+			<hr />
+			<ol>
+				<todo-item v-for="item in sites" v-bind:todo="item"></todo-item>
+			</ol>
+			<hr />
+			<h3>使用自定义事件，子组件向父组件传递消息</h3>
+			<div id="counter-event-example">
+		      <p>{{ total }}</p>
+		      <button-counter v-on:increment="incrementTotal"></button-counter><!--监听事件-->
+		      <button-counter v-on:increment="incrementTotal"></button-counter>
+		    </div>
+		</div>
+		<div id="app2">
+			<h2>APP2</h2>
+			<global-component></global-component>
+			<local-component></local-component>
+			
+		</div>
+		<script>
+			//要放在new Vue()实例前面
+			//所有的 Vue 组件同时也都是 Vue 的实例，所以可接受相同的选项对象（除了一些根级特有的选项）
+			Vue.component(
+				'global-component', {
+					template: '<div>A global component!</div>'
+				}
+			)
+			Vue.component(
+				'prop-component', {
+					props: ['message'],
+					template: '<span>{{ message }}</span>'
+				}
+			)
+			Vue.component(
+				'todo-item', {
+					props: ['todo'],
+					template: '<li>{{ todo.text }}</li>'
+				}
+			)
+			Vue.component(
+				'button-counter', {
+					template: '<button v-on:click="incrementHandler">{{counter}}</button>',
+					//data 必须是函数
+					data: function () {
+						//返回一个新对象，让counter对象独立出来
+					    return {
+					      counter: 0
+					    }
+				  	},
+				  	methods: {
+				  		incrementHandler: function() {
+				  			this.counter += 1;
+				  			this.$emit('increment'); // 触发事件
+				  		}
+				  	}
+				}
+			)
+			var vm = new Vue({
+				el: "#app",
+				data: {
+					counter: 0,
+					total: 0,
+					parentMsg: '这是父组件内容',
+					sites: [
+						{ text: 'Runoob' },
+				     	{ text: 'Google' },
+				     	{ text: 'Taobao' }
+					]
+				},
+				methods: {
+					greet: function (event) {
+						console.log(document.getElementById("msg").innerHTML);
+						document.getElementById("msg").textContent = event.target.name + "被点击了" + this.counter + "次";
+						console.log(document.getElementById("msg").innerHTML);
+					},
+					doSomething: function(event) {
+						alert('dosomething');
+					},
+					clear: function (event) {
+						alert(event.target.value);
+						event.target.value = '';
+					},
+					incrementTotal: function () {
+				   		this.total += 1;
+				    }
+				}
+			})
+			var child = {
+  				template: '<div>A loacl component!</div>'
+			}
+			var vm2 = new Vue({
+				el: "#app2",
+				components: {
+					'local-component': child
+				}
+			})
+
+		</script>
+	</body>
+</html>

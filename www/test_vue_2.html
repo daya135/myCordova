@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<script src="js/vue.js"></script>
+		<title>testVue-watch</title>
+		<style>
+			.active {
+				width: 200px;
+				height: 100px;
+				background: green;
+			}
+			.text-danger {
+				background: dodgerblue;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="computed_props">
+			千米：<input type="text" v-model="kilometers"/>
+			米：<input type="text" v-model="meters"/>
+		</div>
+		<p id="info"></p>
+		<hr />
+		<h3>各种样式绑定的语法：</h3>
+		<div id="app">
+			<!-- 可以在原有class上新增；指定class名可以加引号也可以不加 -->
+			<p v-bind:style="{color: activeColor, fontSize: '15px'}">v-bind:style：内联样式</p>
+			<p v-bind:style="styleObject">v-bind:style 使用对象</p>
+			<p v-bind:style="[styleObject, overridingStyles]">v-bind:style 使用数组</p>
+			<div class="static" v-bind:class="{active: isactive, 'text-danger': hasError}">v-bind:class指令</div>
+			<br>
+			<div v-bind:class="styleComputed">v-bind:class + styleComputed</div>
+		</div>
+		<script>
+			var vm = new Vue({
+				el: '#computed_props',
+				data: {
+					kilometers: 0,
+					meters: 0
+				},
+				methods: {},
+				ccomputed: {},
+				watch: {
+					kilometers: function(arg) {
+						this.kilometers = arg;
+						this.meters = arg * 1000;
+					}, 
+					meters: function(arg) {
+						this.meters = arg;
+						this.kilometers = arg / 1000;
+					}, 
+					
+				}
+			});
+			vm.$watch('kilometers', function(newValue, oldValue){
+				// 这个回调将在 vm.kilometers 改变后调用
+				document.getElementById("info").innerHTML = "修改前值为: " + oldValue + "，修改后值为: " + newValue;
+			});
+			
+			var vm2 = new Vue({
+				el: "#app",
+				data: {
+					isactive: true,
+					hasError: true,
+					styleObject: {
+						color: 'red',
+      					fontSize: '15px'
+					},
+					overridingStyles: {
+				      'font-weight': 'bold'
+				   },
+					activeColor: 'green',
+					fontSize: 15
+				},
+				computed: {
+					styleComputed: function(){
+						return {
+							active: this.isactive && this.hasError,
+							'text-danger' :  this.error && this.error.type === 'fatal'
+						}
+					}
+				}
+			});
+		</script>
+	</body>
+</html>
