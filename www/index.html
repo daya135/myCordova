@@ -1,94 +1,221 @@
 <!DOCTYPE html>
-<!--
-    Licensed to the Apache Software Foundation (ASF) under one
-    or more contributor license agreements.  See the NOTICE file
-    distributed with this work for additional information
-    regarding copyright ownership.  The ASF licenses this file
-    to you under the Apache License, Version 2.0 (the
-    "License"); you may not use this file except in compliance
-    with the License.  You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing,
-    software distributed under the License is distributed on an
-    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-     KIND, either express or implied.  See the License for the
-    specific language governing permissions and limitations
-    under the License.
--->
 <html>
     <head>
-        <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;">
-         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><!--否则乱码-->
-        <meta id="i18n_pagename" content="index-common">
-        <meta name="format-detection" content="telephone=no"> 
-        <meta name="msapplication-tap-highlight" content="no">
+        <!--<meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src * ;img-src *">-->
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><!--否则乱码-->
         <!-- meta使用viewport以确保页面可自由缩放 -->
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
-        <link rel="stylesheet" type="text/css" href="css/index.css">
-        <link rel="styleSheet" type="text/css" href="css/jquery.mobile-1.4.5.min.css">
+       <!-- <link rel="stylesheet" type="text/css" href="css/index.css">-->
+        <link rel="stylesheet" href="https://openlayers.org/en/v4.4.2/css/ol.css" type="text/css">
+        <link rel="stylesheet" href="css/ConfigDemo.css">
 <!--        <script type="text/javascript" src="cordova.js"></script>-->
     	<script type="text/javascript" src="js/index.js"></script>
     	<!--不能用3.2.1，否则jquery mobile无法使用-->
-    	<script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
-    	<script type="text/javascript" src="js/jquery.mobile-1.4.5.min.js"></script>
-    	<script type="text/javascript" src="js/language.js"></script>
-    	<script type="text/javascript" src="js/jquery.i18n.properties.min.js"></script>
+    	<script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>    	
+    	<script src="https://openlayers.org/en/v4.4.2/build/ol.js"></script>
+    	<script src="js/vue.js"></script>
+    	<style>
+    		#map {
+    			width:1000px;
+    			height: 500px;
+    		}
+    		#location {
+    			width:10px; 
+    			height:10px; 
+    			z-index: 1;
+    			position: absolute;
+    		}
+    	</style>
         <title>myApp</title>
     </head>
 <body>
-   <div data-role="page" id="mainPage" >   	 
-	    <div data-role="header" data-theme="b">
-	        <span class="i18n" name="map_title" style="margin-left: 50%;"></span>
-	        <div data-role="navbar" >
-	            <ul>
-	                <li><a href="#" data-transition="fade"  data-theme="c" class="ui-btn-active ui-state-persist i18n" name="map_title1"></a></li>
-	                <li><a href="#airPortPage" data-transition="fade"  data-theme="c" class="i18n" name="map_title2"></a></li>
-	            </ul>
-	        </div>
-        </div>
-	    <div data-role="content">
-	        <input class="i18n-input" id="singleList" class="i18n-input" selectname="searchPlaceholder" selectattr="placeholder">	                                                      
-	 		 </input>
-	    </div>
+	 
+    <div id="app">
+    	<p>{{message}}</p>
+ 		<my-map :mapid="mapid"></my-map>
+    </div>
 	    
-		<div data-role="footer" data-position="fixed"  data-theme="b" data-id="pageFooter">
-	    <div data-role="navbar">
-	        <ul>
-	            <li><a href="#mainPage" data-transition="slide" data-icon="grid" class="ui-btn-active ui-state-persist" class="i18n" name="map_title">航图</a></li>
-	            <li><a href="#systemPage" data-transition="slide" data-icon="gear" class="i18n" name="sys_title"></a></li>
-	        </ul>
-	    </div>
-	    </div>
-	</div>
 	
-	<div data-role="page" id="systemPage" > 
-	    <div data-role="header" data-theme="b">
-	        <a href="#" data-role="button" data-rel="back" class="i18n" name="sys_back"></a>
-	        <span class="i18n" name="sys_title" style="margin-left: 50%;"></span>
-        </div>
-	    <div data-role="content">
-	        <div class="lan1"><label class="i18n" name="lan">选择语言</label></div>
-	        <div class="lan2">
-	            <select id="language">
-	                <option value="zh-CN">中文简体</option>
-	<!--                <option value="zh-TW">中文繁體</option>-->
-	                <option value="en">English</option>
-	            </select>
-	        </div>
-	    </div>
-	    
-		<div data-role="footer" data-position="fixed"  data-theme="b" data-id="pageFooter">
-	    <div data-role="navbar">
-	        <ul>
-	            <li><a href="#mainPage" data-transition="slide" data-icon="grid" class="ui-btn-active ui-state-persist i18n" name="map_title"></a></li>
-	            <li><a href="#pageSetting" data-transition="slide" data-icon="gear" class="i18n" name="sys_title"></a></li>
-	        </ul>
-	    </div>
-	    <div>
-	</div>
+	<script type="text/javascript">
+	 	
+	var vm = new Vue({
+		el:"#app",
+		data:{
+			mapid: 'map',
+			message:'map demo'	
+		},
+		components:{'my-map':{
+				props:['mapid'],
+				template: '\
+					<div v-bind:id="mapid">\
+						<div id="location" ></div>\
+ 					</div>\
+				'
+			}
+		}
+	})
 	
+	var mousePositionControl = new ol.control.MousePosition({
+	    className: 'custom-mouse-position',
+	    target: document.getElementById('location'),
+	    coordinateFormat: ol.coordinate.createStringXY(5),
+	    undefinedHTML: '&nbsp;'
+	});	
+	 	
+    var projection = ol.proj.get('EPSG:4326');
 
+    var raster = new ol.layer.Tile({
+      source: new ol.source.OSM({})
+    });
+
+    var vector = new ol.layer.Vector({
+      source: new ol.source.Vector({
+        url: 'kml/doc.kml',
+        format: new ol.format.KML()
+      })
+    });
+    
+    var geojsonObj = {
+    	    "type": "FeatureCollection",
+    	    "features": [{
+    	            "type": "Feature",
+    	            "geometry": {
+    	                "type": "Point",
+    	                "coordinates": [8.0, 47.1]
+    	            },
+    	            "properties": {
+    	                "prop0": "value0"
+    	            }
+    	        }, {
+    	            "type": "Feature",
+    	            "geometry": {
+    	                "type": "LineString",
+    	                "coordinates": [[7.1, 47.0], [8.5, 47.0], [9.9, 47.0]]
+    	            },
+    	            "properties": {
+    	                "prop0": "value0",
+    	                "prop1": 0.0
+    	            }
+    	        }, {
+    	            "type": "Feature",
+    	            "geometry": {
+    	                "type": "Polygon",
+    	                "coordinates": [[1.1, 48.0], [5.5, 48.0], [10.9, 48.0]]
+    	            },
+    	            "properties": {
+    	                "prop0": "value0",
+    	                "prop1": {
+    	                    "this": "that"
+    	                }
+    	            }
+    	        }
+    	    ]
+    	}
+    var jsonLayer = new ol.layer.Vector({
+        source: new ol.source.Vector({
+          features: (new ol.format.GeoJSON()).readFeatures(geojsonObj)
+        })
+      });
+
+    var map = new ol.Map({
+//      layers: [raster, vector, jsonLayer],
+      layers: [vector],
+      target: document.getElementById('map'),
+      controls : ol.control.defaults({attribution : false}).extend([mousePositionControl]),
+      view: new ol.View({
+//        center: [7.6,47.40],
+ 				center: [39.5, 115.40],
+        projection: projection,
+        zoom: 9
+      })
+    });
+    
+  	var select= new ol.interaction.Select();
+	select.on('select', function(e) {	    	 
+        var features = select.getFeatures(); //{ol.Collection.<ol.Feature>}
+        if (features == null || features.getLength() < 1)
+        	return ;
+        var feature = features.getArray()[0];
+        feature.setId(feature.getId() || "tmpId");
+        if (feature != undefined && feature.getId() != undefined) {	//有可能会点到一个id为空的同一个feature
+       		var geom = feature.getGeometry();
+       		var coo = geom.getCoordinates();
+			addTips(feature);
+    	}
+ 	});
+ 	map.addInteraction(select);
+    
+    function getGeomType(feature) {
+		geom = feature.getGeometry();
+		if (geom instanceof ol.geom.Point) {
+			return "Point";
+		} else if (geom instanceof ol.geom.LineString) {
+			return "LineString";
+		}
+		return "unkown";
+	}
+    
+	function addTips(feature){
+		var contentStr = "";
+		var FeType = getGeomType(feature);
+		var TipCoo;
+		if ("Point" == FeType) {
+			TipCoo = feature.getGeometry().getCoordinates();
+			contentStr += '<p>ID:' + feature.getId() + '</p>';
+			contentStr += '<p>Aist:' + feature.getProperties().aist + '</p>';
+			contentStr += '<p>Coordinate:' + feature.getGeometry().getCoordinates() + '</p>';
+		} else if ("LineString" == FeType){
+			TipCoo = new Array();
+			LineCoo = feature.getGeometry().getCoordinates();
+			TipCoo[0] = (LineCoo[0][0] + LineCoo[1][0]) / 2;
+			TipCoo[1] = (LineCoo[0][1] + LineCoo[1][1]) / 2;
+			contentStr += '<p>ID:' + feature.getId() + '</p>';
+			contentStr += '<p>Angle:' + feature.getProperties().angle + '</p>';
+			contentStr += '<p>length:' + feature.getProperties().length + '</p>';
+		}
+		
+		var overlay = feature.getProperties().overlay;
+		if (overlay == undefined || overlay == null) {
+			var Tips = document.createElement('div');
+			Tips.setAttribute("id", "Tips" + feature.getId());
+			Tips.className = 'ol-popup';
+	        
+			var closer = document.createElement('a');
+			closer.setAttribute("id", "TipsCloser" + feature.getId());
+			closer.className = 'ol-popup-closer';
+			Tips.appendChild(closer);
+			
+			var content = document.createElement('div');
+			content.setAttribute("id", "TipsContent" + feature.getId());
+			content.innerHTML = contentStr;
+			Tips.appendChild(content);
+			
+			overlay = new ol.Overlay({
+				element: Tips,
+		        autoPan: true,
+		        autoPanAnimation: {
+		        	duration: 250
+		        }
+	   		});	
+	        closer.onclick = function() {
+	        	map.removeOverlay(overlay);
+	//             overlay.setPosition(undefined);
+	//             closer.blur();
+	            return false;
+	        };
+			feature.setProperties({"overlay": overlay}, true);
+		} else {
+			var Tips = overlay.getElement();
+			var content = Tips.lastChild;
+			content.innerHTML = contentStr; //支持元素内容更新
+			map.removeOverlay(overlay);
+		}
+	
+		overlay.setPosition(TipCoo);
+		map.addOverlay(overlay); //手动关闭后再次添加  
+	}
+
+    </script>
 </body>
 </html>

@@ -54,8 +54,42 @@ function arrayAndObjext(){
 	}
 	console.log(person);
 	console.log(person.toString());
+	
 	//创建对象方法2
 	var person={firstname:"John",lastname:"Doe",age:50,eyecolor:"blue"};
+	//person2 = Object.create({firstname:"John",lastname:"Doe",age:50,eyecolor:"blue"});//通过person构造
 	console.log(person);
+	console.log(person.toString());
 	
+	//创建对象方法3，通过构造函数
+	var jzz = new Person('jzz','jzz',20);
+	var jzl = new Person('jzl','jzl',20);
+//	jzz.prototype.toString = function() { //不能这么写，jzz.prototype为undefined
+//		return "aaa!!~~~";
+//	}
+	//重写
+	jzz.toString = function() {
+		return "aaa!!~~~";
+	}
+	console.log(jzz);
+	console.log(jzz.toString());
+	console.log(jzl);
+	console.log(jzl.toString());
+	console.log(jzl instanceof Person);
+	console.log(jzl.constructor === Person);
+	console.log(jzl.constructor.constructor);
+	
+	
+}
+
+//构造函数一般首字母大写，区别普通函数
+//构造函数的this会被绑定到创建的对象实例上。普通函数的this则属于此函数的调用者（顶层调用this即为windows，object.func时则this是个对象）。
+//任何函数，只要通过 new 操作符来调用，那它就可以作为构造函数 ；否则就视为普通函数
+function Person(firstname, lastname, age){
+	this.firstname = firstname;
+	this.lastname = lastname;
+	this.age = age;
+}
+Person.prototype.toString=function(){	//通过原型对象添加属性
+	return this.firstname + this.lastname + this.age;
 }
