@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta charset="UTF-8">
-		<script src="js/vue.js"></script>
+		<script src="../js/vue.js"></script>
 		<title>test vue</title>
 		<style>
 			.class1{
@@ -17,8 +17,9 @@
 			<div v-html="test_html"><h4>test_html:</h4></div> <!--v-html 指令用于输出 html代码, 子元素被覆盖-->
 			<p>双大括号被解释为普通文本: {{test_html}}</p><!--直接插入文本-->
 			<p>details: {{details()}}</p>
-			<input v-model="message" />
+			<input v-model="message" /> 
 			<button onclick="changeData()">动态改变数据</button></br>
+			<input v-model="'sss'" />
 			<hr />
 			<h3>表达式, 只支持单个js表达式，但可以通过调用method变通实现复杂场景：</h3>
 			<p>不能通过表达式获取用户定义的全局变量:{{data}}</p>
@@ -103,6 +104,7 @@
 	</body>
 	<script>
 		var data = {
+				seachItems: ['A111', 'A222', 'A333'],
 				sites: [
 			      { name: 'Runoob' },
 			      { name: 'Google' },

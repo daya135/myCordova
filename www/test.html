@@ -3,17 +3,19 @@
 	<head>
 		<meta charset="UTF-8">
 		<title></title>
-		<style>
-			div {
-				height: 300px;
+		<!--<script src="model.js"></script>-->
+		<script src="ES6_this.js"></script>
+		<script>
+			var a = [];
+			for (let i = 0; i < 10; i++) {
+			  a[i] = function () {
+			    console.log(i);
+			  };
 			}
-		</style>
+			a[6]();
+		</script>
 	</head>
 	<body>
-		<a href="#4">4</a>
-		<div id="1">1</div>
-		<div id="2">2</div>
-		<div id="3">3</div>
-		<div id="4">4</div>
+
 	</body>
 </html>

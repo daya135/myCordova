@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta charset="UTF-8">
-		<script src="js/vue.js"></script>
+		<script src="../js/vue.js"></script>
 		<title>testVue Event</title>
 	</head>
 	<body>
@@ -33,8 +33,10 @@
 			<ol>
 				<todo-item v-for="item in sites" v-bind:todo="item"></todo-item>
 			</ol>
+			<hr/>
 			<p>测试validate prop</p>
-			<test-validate v-bind:prop-a="99" v-bind:prop-b="propB"></test-validate> <!--在html中必须将驼峰式转为短横线连接！！！-->
+			<test-validate v-bind:prop-a="100" v-bind:test-boolean="true" v-bind:prop-b="propB"></test-validate> <!--在html中必须将驼峰式转为短横线连接！！！-->
+			<hr/>
 			<p>测试.sync双向绑定，这实际上是个语法糖，只是省了一部分父组件这边监听的代码</p>
 			<span>{{foo}}</span>
 			<test-sync v-bind:foo.sync="foo"></test-sync>
@@ -99,6 +101,13 @@
 				'test-validate', {
 					props:{
 						propA: Number,
+						testBoolean: {
+							type: Boolean,
+						 	validator: function(value) {
+						 		console.log(typeof value);
+								return value;
+						 	}
+						},
 						propB: {
 							type: String,
 							required: true,
@@ -112,7 +121,7 @@
 							}
 						}	
 					},
-					template: '<div><p>{{propA}}</p><p>{{propB}}</p></div>'
+					template: '<div><p>{{propA}}</p><p>{{propB}}</p><p>{{testBoolean}}</p></div>'
 				}
 			)
 			Vue.component('test-for', {
@@ -191,6 +200,7 @@
 					],
 					propA: 100,
 					propB: 'hello',
+					//testBoolean: 'true',
 					messages: [],
 					foo: 'this is foo'
 				},
