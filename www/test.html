@@ -3,16 +3,31 @@
 	<head>
 		<meta charset="UTF-8">
 		<title></title>
-		<!--<script src="model.js"></script>-->
-		<script src="ES6_this.js"></script>
+		<script src="model.js"></script>
+		<!--<script src="ES6_this.js"></script>-->
 		<script>
-			var a = [];
-			for (let i = 0; i < 10; i++) {
-			  a[i] = function () {
-			    console.log(i);
-			  };
-			}
-			a[6]();
+		    
+		    class user {
+                constructor(username) {
+                    this.username = username;
+                }
+                getUsername() {
+                    return this.username + obj.lan;
+                }
+            }
+		    var obj = {
+                lan: 'CN',
+                user: user,
+                setLan: function(lan1) {
+                    obj.lan = lan1;
+                }
+            }
+            
+            var userobj = new obj.user('jzz');
+            console.log(obj.user.prototype.getUsername(), obj.lan);
+            obj.setLan('EN')
+            console.log(obj.user.prototype.getUsername(), obj.lan);
+            
 		</script>
 	</head>
 	<body>

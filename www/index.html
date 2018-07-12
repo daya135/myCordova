@@ -1,220 +1,376 @@
 <!DOCTYPE html>
-
 <html>
-    <head>
-        <!--<meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src * ;img-src *">-->
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><!--否则乱码-->
-        <!-- meta使用viewport以确保页面可自由缩放 -->
-        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
-       <!-- <link rel="stylesheet" type="text/css" href="css/index.css">-->
-        <link rel="stylesheet" href="https://openlayers.org/en/v4.4.2/css/ol.css" type="text/css">
-        <link rel="stylesheet" href="css/ConfigDemo.css">
-<!--        <script type="text/javascript" src="cordova.js"></script>-->
-    	<script type="text/javascript" src="js/index.js"></script>
-    	<!--不能用3.2.1，否则jquery mobile无法使用-->
-    	<script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>    	
-    	<script src="https://openlayers.org/en/v4.4.2/build/ol.js"></script>
-    	<script src="js/vue.js"></script>
-    	<style>
-    		#map {
-    			width:1000px;
-    			height: 500px;
-    		}
-    		#location {
-    			width:10px; 
-    			height:10px; 
-    			z-index: 1;
-    			position: absolute;
-    		}
-    	</style>
-        <title>myApp</title>
-    </head>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>AlloyFinger</title>
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <style>
+        html,body{
+            margin: 0;
+            padding: 0;
+            border: 0;
+            background-color: #ccc;
+            text-align: center;
+           font: 14px / 1.5 "Helvetica Neue",Helvetica,Arial,"Microsoft Yahei","Hiragino Sans GB","Heiti SC","WenQuanYi Micro Hei",sans-serif;
+        }
+        .header{
+            background-color: #333;
+            height: 40px;
+            color:white;
+            text-align: left;
+            text-indent: 20px;
+            font-weight: bold;
+            font-size: 20px;
+            line-height: 40px;
+        }
+        .title{
+            height: 30px;
+            color:#333333;
+            font-size: 20px;
+            line-height: 30px;
+        }
+        .example img{
+            width:160px ;
+        }
+        .imgBox{
+            margin-bottom: 10px;
+            border-bottom: 1px solid #333333;
+        }
+        .swipeBox{
+            height:160px;
+            width: 160px;
+            margin: 0 auto;
+            overflow: hidden;
+            font-size: 0;
+            position: relative;
+            border: 2px solid #ccc;
+            box-sizing: border-box;
+        }
+        .scroll{
+            width: 480px;
+            height: 160px;
+            white-space: nowrap;
+        }
+
+        .nuclear-nav {
+            position: absolute;
+            bottom: 6px;
+            right: 10px;
+        }
+
+        .nuclear-nav a {
+            display: inline-block;
+            background-color: white;
+            cursor: pointer;
+            width: 10px;
+            height: 10px;
+            -moz-border-radius: 5px;
+            -webkit-border-radius: 5px;
+            border-radius: 5px;
+            margin-right: 5px;
+            border: 1px solid #808080;
+        }
+        
+        .nuclear-nav a.active {
+            background-color: #ffd800;
+        }
+
+        .longTapBox{
+            position: relative;
+            margin: 0 auto;
+            width: 160px;
+            height: 160px;
+            overflow: hidden;
+            -webkit-user-select: none;
+            -webkit-user-drag: none;
+            -webkit-touch-callout: none;
+            user-select: none;
+            user-drag: none;
+            touch-callout: none;
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        }
+
+        .longTapBox img{
+            pointer-events: none;
+
+        }
+
+        .overlay2,.overlay{
+            background-color: rgba(70, 70, 70, 0.8);
+            position: absolute;
+            top:0;
+            left: 0;
+            width: 160px;
+            height: 160px;
+
+            display: none;
+        }
+        .overlay2 img, .overlay img{
+            width: 40px;
+            height: 40px;
+            position: absolute;
+            top: 60px;
+            left: 60px;
+        }
+        .pb6{
+            padding-bottom: 6px;
+        }
+
+        .ribbon {
+            top: 3.2em;
+            right: -3.7em;
+            -webkit-transform: rotate(45deg);
+            -moz-transform: rotate(45deg);
+            -ms-transform: rotate(45deg);
+            -o-transform: rotate(45deg);
+            transform: rotate(45deg);
+            color:#fff;
+            display: block;
+            padding: .6em 3.5em;
+            position: fixed;
+            text-align: center;
+            text-decoration: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            background-color: green;
+            z-index: 10000;
+        }
+
+        .btn {
+            letter-spacing: 3px;
+            display: inline-block;
+
+            color: white;
+            width: 270px;
+            height: 45px;
+            font-size: 24px;
+            line-height: 45px;
+            background-color: green;
+            -moz-border-radius: 2px;
+            -webkit-border-radius: 2px;
+            border-radius: 2px;
+            text-decoration: none;
+
+        }
+
+        .footer{
+            height: 120px;
+        }
+        .linkCanvasBox{
+            margin-top: 10px;
+        }
+       .linkCanvasBox .btn{
+            font-size: 16px;
+
+        }
+    </style>
+</head>
 <body>
-	 
-    <div id="app">
-    	<p>{{message}}</p>
- 		<my-map :mapid="mapid"></my-map>
+<a href="https://github.com/AlloyTeam/AlloyFinger" class="ribbon">Fork me on Github</a>
+    <div class="header">AlloyFinger</div>
+    <div class="example">
+    <div class="title">pinch</div>
+    <div class="imgBox">
+        <img id="pinchImg" src="asset/test.png" />
     </div>
-	    
-	
-	<script type="text/javascript">
-	 	
-	var vm = new Vue({
-		el:"#app",
-		data:{
-			mapid: 'map',
-			message:'map demo'	
-		},
-		components:{'my-map':{
-				props:['mapid'],
-				template: '\
-					<div v-bind:id="mapid">\
-						<div id="location" ></div>\
- 					</div>\
-				'
-			}
-		}
-	})
-	
-	var mousePositionControl = new ol.control.MousePosition({
-	    className: 'custom-mouse-position',
-	    target: document.getElementById('location'),
-	    coordinateFormat: ol.coordinate.createStringXY(5),
-	    undefinedHTML: '&nbsp;'
-	});	
-	 	
-    var projection = ol.proj.get('EPSG:4326');
+    <div class="title">rotate</div>
+    <div class="imgBox">
+        <img id="rotateImg" src="asset/test.png" />
+    </div>
+    <div class="title">pinch+rotate</div>
+    <div class="imgBox">
+        <img id="pinchRotateImg" src="asset/test.png" />
+    </div>
+    <div class="title">pressMove</div>
+    <div class="imgBox">
+        <img id="pressMoveImg" src="asset/test.png" />
+    </div>
+    <div class="title">doubleTap</div>
+    <div class="imgBox">
+        <img id="doubleTapImg" src="asset/test.png" />
+    </div>
+    <div class="title">swipe</div>
+        <div class="imgBox pb6">
+    <div class="swipeBox">
+        <div class="scroll"  id="swipeScroll">
+            <img  src="asset/test.png" /> <img  src="asset/test2.png" /> <img  src="asset/test3.png" />
+        </div>
+        <div class="nuclear-nav">
+            <a data-index="0" class="active"></a>
+            <a data-index="1" class=" "></a>
+            <a data-index="2" class=" "></a>
+        </div>
+    </div>
+        </div>
+    <div class="title">longTap</div>
+        <div class="imgBox pb6">
+    <div class=" longTapBox" id="longTapBox">
+        <img id="longTapImg" src="asset/test.png" />
+        <div class="overlay" id="overlay">
+            <img src="asset/yes.png"/>
+        </div>
+    </div>
+        </div>
 
-    var raster = new ol.layer.Tile({
-      source: new ol.source.OSM({})
-    });
+        <div class="title">tap</div>
+        <div class="imgBox pb6">
+            <div class=" longTapBox" id="tapBox">
+                <img  src="asset/test.png" />
+                <div class="overlay2" id="overlay2">
+                    <img src="asset/yes.png"/>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+       <div> <a class="btn" href="http://alloyteam.github.io/AlloyFinger/example/picture/">综合例子→</a></div>
+        <div class="linkCanvasBox"> <a class="btn"  href="http://alloyteam.github.io/AlloyFinger/example/canvas/">AlloyPaper+AlloyFinger→</a></div>
+        <div class="btn" style="margin-bottom: 15px;margin-top: 15px;"> <a class="btn"  href="http://alloyteam.github.io/donate.html">捐赠AlloyFinger</a></div>
+    </div>
+    <script src="asset/transform.js"></script>
+    <script src="alloy_finger.js"></script>
+    <script src="asset/to.js"></script>
+    <script>
+        var pinchImg = document.getElementById("pinchImg");
+        Transform(pinchImg);
+        var initScale = 1;
+        new AlloyFinger(pinchImg, {
+            multipointStart: function () {
+                initScale = pinchImg.scaleX;
+            },
+            pinch: function (evt) {
+                pinchImg.scaleX = pinchImg.scaleY = initScale * evt.zoom;
+            }
+        });
 
-    var vector = new ol.layer.Vector({
-      source: new ol.source.Vector({
-        url: 'kml/doc.kml',
-        format: new ol.format.KML()
-      })
-    });
-    
-    var geojsonObj = {
-    	    "type": "FeatureCollection",
-    	    "features": [{
-    	            "type": "Feature",
-    	            "geometry": {
-    	                "type": "Point",
-    	                "coordinates": [8.0, 47.1]
-    	            },
-    	            "properties": {
-    	                "prop0": "value0"
-    	            }
-    	        }, {
-    	            "type": "Feature",
-    	            "geometry": {
-    	                "type": "LineString",
-    	                "coordinates": [[7.1, 47.0], [8.5, 47.0], [9.9, 47.0]]
-    	            },
-    	            "properties": {
-    	                "prop0": "value0",
-    	                "prop1": 0.0
-    	            }
-    	        }, {
-    	            "type": "Feature",
-    	            "geometry": {
-    	                "type": "Polygon",
-    	                "coordinates": [[1.1, 48.0], [5.5, 48.0], [10.9, 48.0]]
-    	            },
-    	            "properties": {
-    	                "prop0": "value0",
-    	                "prop1": {
-    	                    "this": "that"
-    	                }
-    	            }
-    	        }
-    	    ]
-    	}
-    var jsonLayer = new ol.layer.Vector({
-        source: new ol.source.Vector({
-          features: (new ol.format.GeoJSON()).readFeatures(geojsonObj)
-        })
-      });
+        var rotateImg = document.getElementById("rotateImg");
+        Transform(rotateImg);
+        new AlloyFinger(rotateImg, {
+            rotate:function(evt){
+                rotateImg.rotateZ += evt.angle;
+            }
+        });
 
-    var map = new ol.Map({
-//      layers: [raster, vector, jsonLayer],
-      layers: [vector],
-      target: document.getElementById('map'),
-      controls : ol.control.defaults({attribution : false}).extend([mousePositionControl]),
-      view: new ol.View({
-//        center: [7.6,47.40],
- 				center: [39.5, 115.40],
-        projection: projection,
-        zoom: 9
-      })
-    });
-    
-  	var select= new ol.interaction.Select();
-	select.on('select', function(e) {	    	 
-        var features = select.getFeatures(); //{ol.Collection.<ol.Feature>}
-        if (features == null || features.getLength() < 1)
-        	return ;
-        var feature = features.getArray()[0];
-        feature.setId(feature.getId() || "tmpId");
-        if (feature != undefined && feature.getId() != undefined) {	//有可能会点到一个id为空的同一个feature
-       		var geom = feature.getGeometry();
-       		var coo = geom.getCoordinates();
-			addTips(feature);
-    	}
- 	});
- 	map.addInteraction(select);
-    
-    function getGeomType(feature) {
-		geom = feature.getGeometry();
-		if (geom instanceof ol.geom.Point) {
-			return "Point";
-		} else if (geom instanceof ol.geom.LineString) {
-			return "LineString";
-		}
-		return "unkown";
-	}
-    
-	function addTips(feature){
-		var contentStr = "";
-		var FeType = getGeomType(feature);
-		var TipCoo;
-		if ("Point" == FeType) {
-			TipCoo = feature.getGeometry().getCoordinates();
-			contentStr += '<p>ID:' + feature.getId() + '</p>';
-			contentStr += '<p>Aist:' + feature.getProperties().aist + '</p>';
-			contentStr += '<p>Coordinate:' + feature.getGeometry().getCoordinates() + '</p>';
-		} else if ("LineString" == FeType){
-			TipCoo = new Array();
-			LineCoo = feature.getGeometry().getCoordinates();
-			TipCoo[0] = (LineCoo[0][0] + LineCoo[1][0]) / 2;
-			TipCoo[1] = (LineCoo[0][1] + LineCoo[1][1]) / 2;
-			contentStr += '<p>ID:' + feature.getId() + '</p>';
-			contentStr += '<p>Angle:' + feature.getProperties().angle + '</p>';
-			contentStr += '<p>length:' + feature.getProperties().length + '</p>';
-		}
-		
-		var overlay = feature.getProperties().overlay;
-		if (overlay == undefined || overlay == null) {
-			var Tips = document.createElement('div');
-			Tips.setAttribute("id", "Tips" + feature.getId());
-			Tips.className = 'ol-popup';
-	        
-			var closer = document.createElement('a');
-			closer.setAttribute("id", "TipsCloser" + feature.getId());
-			closer.className = 'ol-popup-closer';
-			Tips.appendChild(closer);
-			
-			var content = document.createElement('div');
-			content.setAttribute("id", "TipsContent" + feature.getId());
-			content.innerHTML = contentStr;
-			Tips.appendChild(content);
-			
-			overlay = new ol.Overlay({
-				element: Tips,
-		        autoPan: true,
-		        autoPanAnimation: {
-		        	duration: 250
-		        }
-	   		});	
-	        closer.onclick = function() {
-	        	map.removeOverlay(overlay);
-	//             overlay.setPosition(undefined);
-	//             closer.blur();
-	            return false;
-	        };
-			feature.setProperties({"overlay": overlay}, true);
-		} else {
-			var Tips = overlay.getElement();
-			var content = Tips.lastChild;
-			content.innerHTML = contentStr; //支持元素内容更新
-			map.removeOverlay(overlay);
-		}
-	
-		overlay.setPosition(TipCoo);
-		map.addOverlay(overlay); //手动关闭后再次添加  
-	}
+        var pinchRotateImg = document.getElementById("pinchRotateImg");
+        Transform(pinchRotateImg);
+        new AlloyFinger(pinchRotateImg, {
+            rotate:function(evt){
+                pinchRotateImg.rotateZ += evt.angle;
+            },
+            multipointStart: function () {
+                initScale = pinchRotateImg.scaleX;
+            },
+            pinch: function (evt) {
+                pinchRotateImg.scaleX = pinchRotateImg.scaleY = initScale * evt.zoom;
+            }
+        });
+
+        var pressMoveImg = document.getElementById("pressMoveImg");
+        Transform(pressMoveImg);
+        new AlloyFinger(pressMoveImg, {
+            pressMove:function(evt){
+                pressMoveImg.translateX += evt.deltaX;
+                pressMoveImg.translateY += evt.deltaY;
+                evt.preventDefault();
+            }
+        });
+
+        function ease(x) {
+            return Math.sqrt(1 - Math.pow(x - 1, 2));
+        }
+        var doubleTapImg = document.getElementById("doubleTapImg");
+        Transform(doubleTapImg);
+        new AlloyFinger(doubleTapImg, {
+            doubleTap:function(){
+                if(doubleTapImg.scaleX===1){
+                    new To(doubleTapImg, "scaleX", 2, 500, ease);
+                    new To(doubleTapImg, "scaleY", 2, 500, ease);
+                }else if(doubleTapImg.scaleX===2){
+                    new To(doubleTapImg, "scaleX", 1, 500, ease);
+                    new To(doubleTapImg, "scaleY", 1, 500, ease);
+                }
+
+            }
+        });
+
+        var swipeScroll = document.getElementById("swipeScroll"),
+            currentIndex=0;
+        Transform(swipeScroll);
+        function activeNav(index){
+            var items = document.querySelectorAll(".nuclear-nav a"),
+                    i = 0,
+                    len = items.length;
+            for (; i < len; i++) {
+                if (i === index) {
+                    items[i].classList.add("active");
+                } else {
+                    items[i].classList.remove("active");
+                }
+            }
+        }
+        new AlloyFinger(swipeScroll, {
+            touchMove:function(evt) {
+                if (Math.abs(evt.deltaX) >= Math.abs(evt.deltaY)) {
+                    evt.preventDefault();
+                }
+            },
+            swipe:function(evt){
+                if(evt.direction==="Left"){
+                    if(currentIndex<2) {
+                        currentIndex++;
+                        new To(swipeScroll, "translateX", -160 * currentIndex, 500, ease, function () {
+                            activeNav(currentIndex);
+                        });
+                    }
+                }else if(evt.direction==="Right"){
+                    if(currentIndex>0) {
+                        currentIndex--;
+                        new To(swipeScroll, "translateX", -160 * currentIndex, 500, ease, function () {
+                            activeNav(currentIndex);
+                        });
+                    }
+                }
+            }
+        });
+
+        var longTapBox = document.getElementById("longTapBox");
+        Transform(longTapBox);
+        var overlay=document.getElementById("overlay");
+        new AlloyFinger(longTapBox, {
+            longTap:function(evt){
+                evt.preventDefault();
+                toggleDom(overlay);
+            }
+        });
+
+        var tapBox = document.getElementById("tapBox");
+        Transform(tapBox);
+        var overlay2=document.getElementById("overlay2");
+        new AlloyFinger(tapBox, {
+            tap:function(){
+                toggleDom(overlay2);
+            },
+            singleTap:function(){
+                console.log("singleTap")
+            },
+            doubleTap:function(){
+                console.log("doubleTap")
+            },
+            pointStart:function(){
+                console.log("pointStart")
+            }
+        });
+
+        function toggleDom(dom){
+            var displayValue=window.getComputedStyle(dom,null)["display"];
+            if(displayValue==="none"){
+                dom.style.display="block";
+            }else{
+                dom.style.display="none";
+            }
+        }
 
     </script>
 </body>
