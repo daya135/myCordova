@@ -4,85 +4,68 @@
 		<meta charset="UTF-8">
 		<title>generator</title>
 		<script>
-		     /**
-     * 创建接口对象
-     * @param name 接口名 
-     * @param methods 接口方法
-     */
-    var Interface = function(name,methods){
-        if(arguments.length != 2){
-            throw new Error('必须输入两个参数,当前个数'+arguments.length);
-        }
- 
-        this.name=name;
-        this.methods=[];
-        for(var i=0, len=methods.length; i<len; i++){
-            if(typeof methods[i] !== 'string'){
-                throw new Error('方法名参数必须为string');
-            }
-            this.methods.push(methods[i]);
-        }
-    };
-    /**
-     * 接口实现
-     * @param  object1 实现接口对象
-     * @param  object2 对应接口
-     * @return 实现错误抛出异常
-     */
-    Interface.ensureImplements = function(object){
-        if(arguments.length < 2){
-            throw new Error('必须输入两个参数,当前个数' + arguments.length);
-        }
-        for(var i=1, len=arguments.length; i < len; i++){
-            var interface = arguments[i];
-            if(interface.constructor != Interface){
-                throw new Error("请实现接口");
-            }
- 
-            for (var j = 0, methodsLen = interface.methods.length; j < methodsLen; j++){
-                var method = interface.methods[j];
-                if(!object[method] || typeof object[method] !== 'function'){
-                    throw new Error("接口名:"+interface.name+"方法名："+method+"没找到");
-                }
-            };
-        }
-    }
- 
- 
-    var DynamicMap = new Interface('DynamicMap',['centerOnPoint','zoom','draw']);
- 
-    /**
-     * 执行方法
-     * @param  函数方法
-     * @return 执行结果
-     */
-    function displayRoute(mapInstance){
-        Interface.ensureImplements(mapInstance,DynamicMap);//实现接口
- 
-        /**
-         * 调用
-         */
-        mapInstance.centerOnPoint(12,34);
-        mapInstance.zoom(5);
-        mapInstance.draw();
-    }
-    /**
-     * 函数方法
-     * @type 实现接口方法
-     */
-    var a={
-        centerOnPoint:function(x,y){
-            console.log(x*y);
-        },
-        zoom:function(x){
-            console.log(x);
-        },
-        draw:function(){
-            console.log("x*y");
-        }
-    }
-    displayRoute(a);
-		</script>
+		  /* generator函数，返回的是一个遍历器对象 */
+		 
+		  console.group('iterator & generator');
+		  /* 版本1 generator函数返回的遍历器可以直接用于循环*/
+		  function* foo() {
+		      yeild 1;
+		      yeild 2;
+		      return 3;
+		  }
+		  for(let i of foo()){
+		      console.log(i);
+		  }
+		  
+		  /* 版本2 使用generator为对象添加iterator接口*/
+		  var obj = {
+		      a:'a',
+		      [Symbol.iterator]: function *(){
+		          yield 'b';
+		          yield 'c';
+		          return 'd';
+		      }
+		  }
+		  for(let item of obj) {
+		      console.log(item);
+		  }
+		  console.groupEnd();
+		  
+		  console.group('yield 递归');
+		  var arr = [1, [[2, 3], 4], [5, 6]];
+		  var flat = function* (a){
+		      var length = a.length;
+		      for(var i = 0; i < length; i++) {
+		          var item = a[i];
+		          if(typeof item !== 'number') {
+		              yield* flat(item);  //yield*表达式：在 Generator 函数内部，调用另一个 Generator 函数，返回的是一个遍历器对象
+		          } else {
+		              yield item;
+		          }
+		      }
+		  };
+		  for (var f of flat(arr)) {  //会重复调用flat(arr).next()
+		      console.log(f);
+		  }
+		  console.groupEnd();
+		  
+		  console.group('yield 的返回值，默认总是返回undefined, next()方法参数能改返回值');
+		  function* foo(x) {
+		      var y = 2 *(yield (x + 1));  //yield出现在表达式内必须用括号包起来
+		      var z = yield (y / 3);
+		      return x + y + z;
+		  }
+		  var a = foo(5);
+		  console.log(a.next());  //6
+		  console.log(a.next());  //Object{value:NaN, done:false}     //不传值，上一次next()的值返回undefined
+		  console.log(a.next());  //Object{value:NaN, done:true}
+		  a = foo(5);
+		  console.log(a.next(100));  //6 第一个next()传值被忽略
+          console.log(a.next(6));   //Object{value:4, done:false} next()的参数代表上一次yield的返回值
+          console.log(a.next(4));   //Object{value:29, done:false} 
+		  console.groupEnd();
+   
+		</script>]
 	</head>
 	<body>
 	</body>
